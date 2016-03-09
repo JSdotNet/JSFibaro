@@ -1,0 +1,50 @@
+﻿
+
+Many scene's will depend on Fibaro knowing if anybody is home. 
+The trick will be to let the fibaro figure this out withou requirering a manual action, 
+but in any case we need a variable where this information is stored and that can be used by the differen scene's
+- Home = true/false
+- Vacation = true/false				-- For some scene's it's important to know the difference between away for hours of for days / weeks
+- Away = !Home or Vacation
+
+
+Other scene's will need to know if you are sleeping or awake. In most cases these only apply when you are home.
+- Sleeping = true/false;
+- Awake = !Sleeping;
+
+
+- Cycle = { Sleeping, Waking, GettingReadyToLeave, Day, Evening, GettingReadyForBed }
+Cycle is the state of the house used for when you are at home. These parameter should be used in combination with Home/Away
+	- Sleeping: No heat requirement, al lights should be off
+	- Waking:	The transition period between 
+
+
+
+
+Times
+Some scene's will need to know in advance when something needs to happen. 
+Your heating for example needs time adjust the temperature. It may take up to a few hours to reach the required temperature.
+These variables define set time that can be used in certain scenario's
+(The idea is to adjust these variable based on an alarm set, an aganda or a geolocating)
+- WakeUpTime = "07:00"			 
+- ExpectedHomeTime = "19:00"		-- Expected time I will be home (empty if not expected home that day)
+- SleepTime = "24:00"				-- Expected time for going to sleep (this may be relative to the WakeUpTime if you want to ensure a certain amount of hours sleep)
+
+
+Heating
+The idea is to make all heating scene's follow the same global guidelines whenit come to required temperature
+- Temperature = 19.5				-- The normal Temperature when at home
+- TemperatureDrop_Away = 3			-- How much can the temperature drop when nodbody is home. 
+ 									-- Because somebody is expected to return within a (relatively) short amount of time the temperature should not drop to much 
+- TemperatureDrop_Sleeping = 3		-- How much can the temperature drop when you are sleepinhg (might be the same as away, but this allows for the option that it is no
+- Temperature_Minimal = 13			-- How much can the temperature drop when nodbody is home.
+									-- When you stay away longer, the temperature can drop further, still there is a limit to how cold it can get. 								
+
+
+
+Other
+- DevicesToTurnOffWhenAwayOrSleeping = {0, 0, ...}				-- Devices you want shut donw when your not home (only put in devices that can be turne of washer may not be a good idee)
+- DevicesToTurnBackOnWhenHomeAndAwake = {0, 0, ...} 			-- Only some of the devices should be turned back on when you get back home, 
+																-- light should not be turned on just because you come home, but it would be nice if you could use your tv.
+
+
