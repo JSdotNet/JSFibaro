@@ -12,16 +12,15 @@ Time_WakeUp_Minute
 local activity = "Waking";                          -- Name of the Activity this scene relates to
 local scene = "Activity To '" .. activity .. "'";	-- Name of the scene
 
-
 -- General:
 local debug = true; 
 
 ----- Get Wakeup Time -----
-local wakeUpTime_Hours = tonumber(fibaro:getGlobal('Time_WakeUp_Hour')) - 1;		-- Integer value representing the hours of the time
-local wakeUpTime_Minutes = tonumber(fibaro:getGlobal('Time_WakeUp_Minute'));		-- Integer value representing the minutes of the time
+local wakeUpTime_Hours = fibaro:getGlobal('Time_WakeUp_Hour') - 1;		-- Integer value representing the hours of the time
+local wakeUpTime_Minutes = fibaro:getGlobal('Time_WakeUp_Minute');		-- Integer value representing the minutes of the time
         
 local currentTime = os.date("*t");
-local sceneTime = os.time{year=currentTime.year, month=currentTime.month, day=(currentTime.hour < 10 and currentTime.day or currentTime.day + 1), hour=wakeUpTime_Hours, minutes=wakeUpTime_Minutes};
+local sceneTime = os.time{year=currentTime.year, month=currentTime.month, day=(currentTime.hour < 10 and currentTime.day or currentTime.day + 1), hour=tonumber(wakeUpTime_Hours) - 1, minutes=tonumber(wakeUpTime_Minutes)};
 
 
 local startSource = fibaro:getSourceTrigger();
@@ -39,7 +38,7 @@ then
     
     if (debug) then fibaro:debug(scene .. " - Started"); end
     
-    if (debug) then fibaro:debug(scene .. " - Set Activity from: " .. fibaro:getGlobalValue("Activity") .. " to " .. activity ..); end  
+    if (debug) then fibaro:debug(scene .. " - Set Activity from: '" .. fibaro:getGlobalValue("Activity") .. "' to '" .. activity  .. "'"); end 
 	fibaro:setGlobal("Activity", activity);
     
     if (debug) then fibaro:debug(scene .. " - Ended"); end

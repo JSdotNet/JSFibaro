@@ -50,7 +50,7 @@ then
         if (maxlevel > 100) then maxlevel = 100; end 
         if (startlevel > maxlevel) then startlevel = maxlevel; end 
 
-        local increasePerStep = math.ceil((targetlevel - startlevel) / levelsteps);
+        local increasePerStep = math.ceil((maxlevel - startlevel) / levelsteps);
 
         if (debug) then fibaro:debug(scene .. " - Increase Started" ); end
         for level = startlevel, maxlevel, increasePerStep do 
@@ -101,13 +101,13 @@ then
             fibaro:abort();
         else
             ----- Get Wakeup Time -----
-            local wakeUpTime_Hours = tonumber(fibaro:getGlobal('Time_WakeUp_Hour'));			-- Integer value representing the hours of the time
-            local wakeUpTime_Minutes = tonumber(fibaro:getGlobal('Time_WakeUp_Minute'));		-- Integer value representing the minutes of the time
+            local wakeUpTime_Hours = fibaro:getGlobal('Time_WakeUp_Hour');			-- Integer value representing the hours of the time
+            local wakeUpTime_Minutes = fibaro:getGlobal('Time_WakeUp_Minute');		-- Integer value representing the minutes of the time
         
             -- Calculate scene start time based on duration
-            local minutes = levelsteps * diminterval;
-            local start_Minutes = (wakeUpTime_Minutes > start_Minutes and wakeUpTime_Minutes - start_Minutes or wakeUpTime_Minutes + 60 - start_Minutes);
-            local start_Hours = (wakeUpTime_Minutes > start_Minutes and wakeUpTime_Hours  or wakeUpTime_Hours + 1);
+            local duration = levelsteps * diminterval;
+            local start_Minutes = (tonumber(wakeUpTime_Minutes) > duration and tonumber(wakeUpTime_Minutes) - duration or tonumber(wakeUpTime_Minutes) + 60 - duration);
+            local start_Hours = (tonumber(wakeUpTime_Minutes) > duration and tonumber(wakeUpTime_Hours)  or tonumber(wakeUpTime_Hours) + 1);
         
             local currentTime = os.date("*t");
             
