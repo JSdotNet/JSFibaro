@@ -29,19 +29,17 @@ local diminterval = 1;				-- interval time in minutes to wait to next dimlevel
 local levelsteps = 20;				-- Number of steps to increase to target level
 -- This configuration increses the light level in 20 minutes (20 steps with 1 minute interval)
 
--- Scenae Trigger
+-- Scene Trigger
 local startSource = fibaro:getSourceTrigger(); -- Start when at Home and Sleeping
 if ( ( fibaro:getGlobalValue("Presence") == "Home"  and  
-       fibaro:getGlobalValue("Activity") == "Sleeping" )
+       fibaro:getGlobalValue("Activity") == "Waking" )
     or startSource["type"] == "other") -- Support manual start
 then
-	
     ----- Only allow one instance of the current scene to run at a time -----
     if (fibaro:countScenes() > 1) then
-        if (debug) then fibaro:debug(scene .. " - Aborting (Already Running) " .. dimlevel); end 
+        if (debug) then fibaro:debug(scene .. " - Aborting (Already Running)"); end 
         fibaro:abort();
     end
-
 
     ----- Implementation (Supporting Functions) -----
     function increaseLight(deviceId)
@@ -84,18 +82,16 @@ then
         end
     end
 
-
-
     ----- Implementation (Main) -----
     if (debug) then fibaro:debug(scene .. " - Started"); end
     local completed = false;
     while not completed do	
 
-        -- TODO: END SCENE IF: AWAY, !SLEEPING
+        -- END SCENE IF: AWAY, !WAKING
         local presence = fibaro:getGlobalValue("Presence");
         local activity = fibaro:getGlobalValue("Activity");
-        if ( fibaro:getGlobalValue("Presence") ~= "Home"  or  
-             fibaro:getGlobalValue("Activity") ~= "Sleeping" )
+        if ( fibaro:getGlobalValue("Presence") ~= "Home"  and  
+             fibaro:getGlobalValue("Activity") ~= "Waking" )
         then
             if (debug) then fibaro:debug(scene .. " - Aborting: incorrect Presence (" .. presence .. ") or Activity (" .. activity .. ")"); end
             fibaro:abort();
