@@ -28,32 +28,45 @@ local completed = false;
 while not completed do	
 
     -- Check if activity isn't already set --
-    if (fibaro:getGlobalValue("Activity") ~= activity) then
+    if (fibaro:getGlobalValue("Activity") == activity) then
         if (debug) then fibaro:debug(scene .. " - Aborting (State already set)"); end 
         fibaro:abort();
     end
 
     ----- Get Wakeup Time -----
-    local wakeUpTime_Hours = fibaro:getGlobal('Time_WakeUp_Hour') - 1;		-- Integer value representing the hours of the time
+    local wakeUpTime_Hours = fibaro:getGlobal('Time_WakeUp_Hour');		    -- Integer value representing the hours of the time
     local wakeUpTime_Minutes = fibaro:getGlobal('Time_WakeUp_Minute');		-- Integer value representing the minutes of the time
-            
-    local currentTime = os.date("*t");
-    -- sceneTime = 1 hour before wakeup time
-    local sceneTime = os.time{year=currentTime.year, month=currentTime.month, day=(currentTime.hour < 10 and currentTime.day or currentTime.day + 1), hour=tonumber(wakeUpTime_Hours) - 1, minutes=tonumber(wakeUpTime_Minutes)};
 
+    -- sceneTime = 1 hour before wakeup time
+    local scene_Hours = wakeUpTime_Hours - 1;
+  	local scene_Minutes = wakeUpTime_Minutes;
+  	
+    if (debug) then 
+        fibaro:debug(scene .. ": scene hours => " .. scene_Hours);
+        fibaro:debug(scene .. ": scene minutes => " .. scene_Minutes);
+        
+        fibaro:debug(scene .. ": os hours => " .. os.date("%H"));
+        fibaro:debug(scene .. ": os minutes => " .. os.date("%M"));
+    end
 
     --local startSource = fibaro:getSourceTrigger();
     if ( 
         --fibaro:getGlobalValue("Presence") == "Home"  and  TODO: FOR NOW CYCLE IS INDEPENDEND FROM PRESENSE, THIS SHOULD BE REVIEWED ...
-        os.time() > sceneTime 
+        tonumber(os.date("%H")) >= tonumber(scene_Hours) and 
+        tonumber(os.date("%M")) >= tonumber(scene_Minutes)
        ) 
        -- or startSource["type"] == "other")
     then
         if (debug) then fibaro:debug(scene .. " - Set Activity from: '" .. fibaro:getGlobalValue("Activity") .. "' to '" .. activity  .. "'"); end 
         fibaro:setGlobal("Activity", activity);
         
-        if (debug) then fibaro:debug(scene .. " - Ended"); end
+        completed = true;
+        if (debug) then fibaro:debug(scene .. " - Completed"); end
     end
     
     fibaro:sleep(checkInterval*60*1000); -- give the system some breathing space
 end
+
+-- Don't start again today, sleep till midnight
+fibaro:sleep(24 - os.date("%H")*60*1000); 
+if (debug) then fibaro:debug(scene .. " - Ended"); end
